@@ -50,7 +50,12 @@ def compare_schema(source_data, target_data, mode):
 
 
 def compare_diff(source_data, target_data):
-    comparison_df = source_data.compare(target_data)
+    source_data_columns = source_data.columns.tolist()
+    target_data_columns = target_data.columns.tolist()
+    sorted_source_data = source_data.sort_values(by=source_data_columns, ignore_index=True)
+    sorted_target_data = target_data.sort_values(by=target_data_columns, ignore_index=True)
+    comparison_df = sorted_source_data.compare(sorted_target_data, keep_shape=True, keep_equal=True)
+
     if comparison_df.isnull().values.any():
         print('anomaly detected in diff')
         return False
