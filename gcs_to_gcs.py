@@ -4,19 +4,13 @@ import pandas as pd
 
 bqclient = bigquery.Client()
 
-def get_source_data(gsutil_uri):
+def get_data(gsutil_uri):
     if '.csv' in gsutil_uri:
         data = pd.read_csv(gsutil_uri)
     elif '.json' in gsutil_uri:
         data = pd.read_json(gsutil_uri)
     else:
         return 'filetype invalid'
-    return data
-
-def get_target_data(bq_table_spec):
-    table = bigquery.TableReference.from_string(bq_table_spec)
-    rows = bqclient.list_rows(table)
-    data = rows.to_dataframe()
     return data
 
 def parse_data(source_data, target_data, mode):
@@ -64,9 +58,9 @@ def get_sample_values(data):
 
 if __name__ in '__main__':
     cli_arguments = sys.argv
-    gsutil_uri = cli_arguments[1]
-    bq_table_spec = cli_arguments[2]
+    gsutil_uri_source = cli_arguments[1]
+    gsutil_uri_target = cli_arguments[2]
 
-    source_data = get_source_data(gsutil_uri)
-    target_data = get_target_data(bq_table_spec)
+    source_data = get_data(gsutil_uri_source)
+    target_data = get_data(gsutil_uri_target)
     results = parse_data(source_data, target_data, mode='default')
