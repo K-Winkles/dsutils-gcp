@@ -9,4 +9,4 @@ if __name__ in '__main__':
 
     source_data = get_table_data(bq_table_spec_source)
     target_data = get_table_data(bq_table_spec_target)
-    results = parse_data(source_data, target_data, mpde='default')
+    results = parse_data(source_data, target_data, mode='default')
