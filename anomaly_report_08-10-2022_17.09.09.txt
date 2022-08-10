@@ -1,0 +1,159 @@
+Anomaly report 08-10-2022_17.09.09
+source data: gs://staging-bucket-secret-sauce/pizza_v1.csv
+target data: agile-splicer-356706.dummy_data.pizza_v1
+---ROW CHECK---
+source data rows: 129
+target data rows:129
+remarks: PASSED
+---SCHEMA CHECK---
+mode: default
+source schema: {"company": "object", "price_rupiah": "object", "diameter": "float64", "topping": "object", "variant": "object", "size": "object", "extra_sauce": "object", "extra_cheese": "object"}
+target schema: {"company": "object", "price_rupiah": "object", "diameter": "float64", "topping": "object", "variant": "object", "size": "object", "extra_sauce": "bool", "extra_cheese": "bool"}
+remarks: PASSED
+---DUPLICATE CHECK---
+mode: source
+    company price_rupiah  diameter     topping   variant size extra_sauce extra_cheese
+47        B     Rp83,000      17.0     chicken  new_york   XL          no          yes
+110       E    Rp115,000      17.0  mozzarella  new_york   XL          no          yes
+122       E     Rp83,000      17.0     chicken  new_york   XL          no          yes
+remarks: FAILED
+---DUPLICATE CHECK---
+mode: target
+  company price_rupiah  diameter     topping   variant size  extra_sauce  extra_cheese
+1       B     Rp83,000      17.0     chicken  new_york   XL        False          True
+4       E     Rp83,000      17.0     chicken  new_york   XL        False          True
+7       E    Rp115,000      17.0  mozzarella  new_york   XL        False          True
+remarks: FAILED
+---DIFF CHECK---
+    company       price_rupiah            diameter             topping                          variant                        size          extra_sauce        extra_cheese       
+       self other         self      other     self other          self         other               self              other     self    other        self  other         self  other
+0         A     A    Rp110,000  Rp110,000     16.0  16.0  black papper  black papper      super_supreme      super_supreme    jumbo    jumbo         yes   True          yes   True
+1         A     A    Rp110,000  Rp110,000     16.0  16.0   smoked beef   smoked beef  american_favorite  american_favorite    jumbo    jumbo          no  False          yes   True
+2         A     A    Rp110,000  Rp110,000     16.0  16.0   smoked beef   smoked beef        meat_lovers        meat_lovers    jumbo    jumbo          no  False          yes   True
+3         A     A    Rp114,000  Rp114,000     14.0  14.0       chicken       chicken         double_mix         double_mix  reguler  reguler         yes   True          yes   True
+4         A     A    Rp120,000  Rp120,000     16.0  16.0     mushrooms     mushrooms   double_signature   double_signature  reguler  reguler         yes   True          yes   True
+5         A     A    Rp140,000  Rp140,000     18.5  18.5  black papper  black papper  american_favorite  american_favorite    jumbo    jumbo          no  False           no  False
+6         A     A    Rp140,000  Rp140,000     18.5  18.5    mozzarella    mozzarella        meat_lovers        meat_lovers    jumbo    jumbo          no  False          yes   True
+7         A     A    Rp140,000  Rp140,000     18.5  18.5    mozzarella    mozzarella      super_supreme      super_supreme    jumbo    jumbo          no  False           no  False
+8         A     A    Rp149,000  Rp149,000     16.5  16.5       chicken       chicken         double_mix         double_mix  reguler  reguler         yes   True           no  False
+9         A     A    Rp149,000  Rp149,000     16.5  16.5   smoked beef   smoked beef         double_mix         double_mix  reguler  reguler         yes   True           no  False
+10        A     A    Rp155,000  Rp155,000     14.0  14.0   smoked beef   smoked beef   double_signature   double_signature  reguler  reguler         yes   True           no  False
+11        A     A    Rp188,000  Rp188,000     18.5  18.5     mushrooms     mushrooms         double_mix         double_mix    jumbo    jumbo         yes   True          yes   True
+12        A     A    Rp198,000  Rp198,000     20.0  20.0     papperoni     papperoni   double_signature   double_signature    jumbo    jumbo         yes   True          yes   True
+13        A     A    Rp230,000  Rp230,000     22.0  22.0       chicken       chicken         double_mix         double_mix    jumbo    jumbo         yes   True          yes   True
+14        A     A    Rp235,000  Rp235,000     22.0  22.0       chicken       chicken   double_signature   double_signature    jumbo    jumbo         yes   True          yes   True
+15        A     A    Rp248,000  Rp248,000     18.0  18.0    mozzarella    mozzarella   double_signature   double_signature    jumbo    jumbo         yes   True           no  False
+16        A     A     Rp70,000   Rp70,000      8.0   8.0       chicken       chicken        meat_lovers        meat_lovers  reguler  reguler         yes   True          yes   True
+17        A     A     Rp70,000   Rp70,000      8.0   8.0     papperoni     papperoni  american_favorite  american_favorite  reguler  reguler          no  False           no  False
+18        A     A     Rp70,000   Rp70,000      8.0   8.0   smoked beef   smoked beef      super_supreme      super_supreme  reguler  reguler         yes   True          yes   True
+19        A     A     Rp90,000   Rp90,000     12.0  12.0  black papper  black papper      super_supreme      super_supreme  reguler  reguler          no  False          yes   True
+20        A     A     Rp90,000   Rp90,000     12.0  12.0    mozzarella    mozzarella        meat_lovers        meat_lovers  reguler  reguler         yes   True          yes   True
+21        A     A     Rp90,000   Rp90,000     12.0  12.0    mozzarella    mozzarella      super_supreme      super_supreme  reguler  reguler          no  False          yes   True
+22        A     A     Rp90,000   Rp90,000     12.0  12.0     mushrooms     mushrooms  american_favorite  american_favorite  reguler  reguler         yes   True           no  False
+23        A     A     Rp90,000   Rp90,000     12.0  12.0     mushrooms     mushrooms        meat_lovers        meat_lovers  reguler  reguler         yes   True          yes   True
+24        A     A     Rp90,000   Rp90,000     12.0  12.0   smoked beef   smoked beef  american_favorite  american_favorite  reguler  reguler          no  False           no  False
+25        B     B    Rp115,000  Rp115,000     17.0  17.0    mozzarella    mozzarella           new_york           new_york       XL       XL          no  False          yes   True
+26        B     B    Rp119,000  Rp119,000     17.0  17.0     mushrooms     mushrooms           new_york           new_york       XL       XL         yes   True           no  False
+27        B     B    Rp123,000  Rp123,000     12.0  12.0   smoked beef   smoked beef      double_decker      double_decker   medium   medium         yes   True          yes   True
+28        B     B    Rp126,500  Rp126,500     12.0  12.0   smoked beef   smoked beef      double_decker      double_decker   medium   medium         yes   True           no  False
+29        B     B     Rp23,500   Rp23,500      8.5   8.5    mozzarella    mozzarella            classic            classic    small    small         yes   True           no  False
+30        B     B     Rp31,000   Rp31,000      8.5   8.5     mushrooms     mushrooms            classic            classic    small    small         yes   True          yes   True
+31        B     B     Rp33,000   Rp33,000      8.5   8.5       chicken       chicken            classic            classic    small    small          no  False          yes   True
+32        B     B     Rp46,000   Rp46,000     12.0  12.0       chicken       chicken            classic            classic   medium   medium         yes   True           no  False
+33        B     B     Rp46,000   Rp46,000     12.0  12.0    mozzarella    mozzarella            classic            classic   medium   medium         yes   True          yes   True
+34        B     B     Rp46,000   Rp46,000     12.0  12.0     mushrooms     mushrooms            classic            classic   medium   medium         yes   True          yes   True
+35        B     B     Rp49,000   Rp49,000     12.0  12.0    mozzarella    mozzarella            crunchy            crunchy   medium   medium          no  False           no  False
+36        B     B     Rp49,000   Rp49,000     12.0  12.0   smoked beef   smoked beef            crunchy            crunchy   medium   medium          no  False          yes   True
+37        B     B     Rp69,000   Rp69,000     12.0  12.0       chicken       chicken            classic            classic   medium   medium          no  False          yes   True
+38        B     B     Rp72,000   Rp72,000     14.0  14.0       chicken       chicken            classic            classic    large    large         yes   True          yes   True
+39        B     B     Rp72,000   Rp72,000     14.0  14.0    mozzarella    mozzarella            classic            classic    large    large         yes   True          yes   True
+40        B     B     Rp72,000   Rp72,000     14.0  14.0   smoked beef   smoked beef            classic            classic    large    large         yes   True           no  False
+41        B     B     Rp75,000   Rp75,000      8.5   8.5   smoked beef   smoked beef            classic            classic    small    small         yes   True          yes   True
+42        B     B     Rp75,000   Rp75,000     12.0  12.0     mushrooms     mushrooms            crunchy            crunchy   medium   medium          no  False          yes   True
+43        B     B     Rp76,000   Rp76,000     12.0  12.0       chicken       chicken            crunchy            crunchy   medium   medium          no  False           no  False
+44        B     B     Rp83,000   Rp83,000     17.0  17.0       chicken       chicken           new_york           new_york       XL       XL          no  False          yes   True
+45        B     B     Rp83,000   Rp83,000     17.0  17.0       chicken       chicken           new_york           new_york       XL       XL          no  False          yes   True
+46        B     B     Rp93,000   Rp93,000     14.0  14.0     mushrooms     mushrooms            classic            classic    large    large          no  False          yes   True
+47        B     B     Rp96,000   Rp96,000     12.0  12.0       chicken       chicken      double_decker      double_decker   medium   medium          no  False          yes   True
+48        B     B     Rp96,000   Rp96,000     12.0  12.0     mushrooms     mushrooms      double_decker      double_decker   medium   medium          no  False          yes   True
+49        C     C    Rp105,000  Rp105,000     14.0  14.0          meat          meat    BBQ_meat_fiesta    BBQ_meat_fiesta    large    large         yes   True           no  False
+50        C     C    Rp105,000  Rp105,000     14.0  14.0    vegetables    vegetables      gournet_greek      gournet_greek    large    large          no  False           no  False
+51        C     C     Rp28,000   Rp28,000      8.5   8.5    vegetables    vegetables     italian_veggie     italian_veggie    small    small          no  False          yes   True
+52        C     C     Rp32,000   Rp32,000      8.5   8.5          tuna          tuna       neptune_tuna       neptune_tuna    small    small         yes   True           no  False
+53        C     C     Rp35,000   Rp35,000      8.5   8.5          beef          beef   american_classic   american_classic    small    small         yes   True           no  False
+54        C     C     Rp35,000   Rp35,000      8.5   8.5          meat          meat         meat_eater         meat_eater    small    small         yes   True          yes   True
+55        C     C     Rp35,000   Rp35,000      8.5   8.5     mushrooms     mushrooms       extravaganza       extravaganza    small    small         yes   True          yes   True
+56        C     C     Rp39,000   Rp39,000      8.5   8.5       sausage       sausage        BBQ_sausage        BBQ_sausage    small    small          no  False          yes   True
+57        C     C     Rp39,000   Rp39,000      8.5   8.5          tuna          tuna         spicy_tuna         spicy_tuna    small    small         yes   True          yes   True
+58        C     C     Rp39,000   Rp39,000      8.5   8.5    vegetables    vegetables        thai_veggie        thai_veggie    small    small          no  False          yes   True
+59        C     C     Rp44,000   Rp44,000      8.5   8.5          meat          meat    BBQ_meat_fiesta    BBQ_meat_fiesta    small    small         yes   True           no  False
+60        C     C     Rp44,000   Rp44,000      8.5   8.5    vegetables    vegetables      gournet_greek      gournet_greek    small    small          no  False           no  False
+61        C     C     Rp51,000   Rp51,000     12.0  12.0    vegetables    vegetables     italian_veggie     italian_veggie   medium   medium          no  False          yes   True
+62        C     C     Rp54,000   Rp54,000     12.0  12.0          tuna          tuna       neptune_tuna       neptune_tuna   medium   medium         yes   True          yes   True
+63        C     C     Rp60,000   Rp60,000     12.0  12.0          beef          beef   american_classic   american_classic   medium   medium         yes   True           no  False
+64        C     C     Rp60,000   Rp60,000     12.0  12.0          meat          meat         meat_eater         meat_eater   medium   medium         yes   True          yes   True
+65        C     C     Rp60,000   Rp60,000     12.0  12.0         onion         onion       extravaganza       extravaganza   medium   medium         yes   True          yes   True
+66        C     C     Rp72,000   Rp72,000     12.0  12.0       sausage       sausage        BBQ_sausage        BBQ_sausage   medium   medium         yes   True          yes   True
+67        C     C     Rp72,000   Rp72,000     12.0  12.0          tuna          tuna         spicy_tuna         spicy_tuna   medium   medium         yes   True          yes   True
+68        C     C     Rp72,000   Rp72,000     12.0  12.0    vegetables    vegetables        thai_veggie        thai_veggie   medium   medium         yes   True           no  False
+69        C     C     Rp78,000   Rp78,000     12.0  12.0          meat          meat    BBQ_meat_fiesta    BBQ_meat_fiesta   medium   medium          no  False           no  False
+70        C     C     Rp78,000   Rp78,000     12.0  12.0    vegetables    vegetables      gournet_greek      gournet_greek   medium   medium          no  False           no  False
+71        C     C     Rp84,000   Rp84,000     14.0  14.0    vegetables    vegetables     italian_veggie     italian_veggie    large    large         yes   True          yes   True
+72        C     C     Rp92,000   Rp92,000     14.0  14.0          tuna          tuna       neptune_tuna       neptune_tuna    large    large         yes   True          yes   True
+73        C     C     Rp98,000   Rp98,000     14.0  14.0          beef          beef   american_classic   american_classic    large    large         yes   True           no  False
+74        C     C     Rp98,000   Rp98,000     14.0  14.0          meat          meat         meat_eater         meat_eater    large    large         yes   True          yes   True
+75        C     C     Rp98,000   Rp98,000     14.0  14.0    mozzarella    mozzarella       extravaganza       extravaganza    large    large         yes   True          yes   True
+76        C     C     Rp99,000   Rp99,000     14.0  14.0       sausage       sausage        BBQ_sausage        BBQ_sausage    large    large          no  False          yes   True
+77        C     C     Rp99,000   Rp99,000     14.0  14.0          tuna          tuna         spicy_tuna         spicy_tuna    large    large         yes   True          yes   True
+78        C     C     Rp99,000   Rp99,000     14.0  14.0    vegetables    vegetables        thai_veggie        thai_veggie    large    large          no  False           no  False
+79        D     D    Rp110,000  Rp110,000     16.0  16.0   smoked beef   smoked beef        meat_lovers        meat_lovers    jumbo    jumbo          no  False          yes   True
+80        D     D    Rp114,000  Rp114,000     14.0  14.0       chicken       chicken         double_mix         double_mix  reguler  reguler         yes   True          yes   True
+81        D     D    Rp140,000  Rp140,000     18.5  18.5    mozzarella    mozzarella        meat_lovers        meat_lovers    jumbo    jumbo          no  False          yes   True
+82        D     D    Rp149,000  Rp149,000     16.5  16.5       chicken       chicken         double_mix         double_mix  reguler  reguler         yes   True           no  False
+83        D     D    Rp149,000  Rp149,000     16.5  16.5   smoked beef   smoked beef         double_mix         double_mix  reguler  reguler         yes   True           no  False
+84        D     D    Rp188,000  Rp188,000     18.5  18.5     mushrooms     mushrooms         double_mix         double_mix    jumbo    jumbo         yes   True          yes   True
+85        D     D     Rp23,500   Rp23,500      8.5   8.5    mozzarella    mozzarella            classic            classic    small    small         yes   True           no  False
+86        D     D    Rp230,000  Rp230,000     22.0  22.0       chicken       chicken         double_mix         double_mix    jumbo    jumbo         yes   True          yes   True
+87        D     D     Rp31,000   Rp31,000      8.5   8.5     mushrooms     mushrooms            classic            classic    small    small         yes   True          yes   True
+88        D     D     Rp46,000   Rp46,000     12.0  12.0       chicken       chicken            classic            classic   medium   medium         yes   True           no  False
+89        D     D     Rp49,000   Rp49,000     12.0  12.0    mozzarella    mozzarella            crunchy            crunchy   medium   medium          no  False           no  False
+90        D     D     Rp69,000   Rp69,000     12.0  12.0       chicken       chicken            classic            classic   medium   medium          no  False          yes   True
+91        D     D     Rp70,000   Rp70,000      8.0   8.0       chicken       chicken        meat_lovers        meat_lovers  reguler  reguler         yes   True          yes   True
+92        D     D     Rp72,000   Rp72,000     14.0  14.0   smoked beef   smoked beef            classic            classic    large    large         yes   True           no  False
+93        D     D     Rp75,000   Rp75,000     12.0  12.0     mushrooms     mushrooms            crunchy            crunchy   medium   medium          no  False          yes   True
+94        D     D     Rp83,000   Rp83,000     17.0  17.0       chicken       chicken           new_york           new_york       XL       XL          no  False          yes   True
+95        D     D     Rp90,000   Rp90,000     12.0  12.0    mozzarella    mozzarella        meat_lovers        meat_lovers  reguler  reguler         yes   True          yes   True
+96        D     D     Rp90,000   Rp90,000     12.0  12.0     mushrooms     mushrooms        meat_lovers        meat_lovers  reguler  reguler         yes   True          yes   True
+97        D     D     Rp93,000   Rp93,000     14.0  14.0     mushrooms     mushrooms            classic            classic    large    large          no  False          yes   True
+98        D     D     Rp96,000   Rp96,000     12.0  12.0       chicken       chicken      double_decker      double_decker   medium   medium          no  False          yes   True
+99        E     E    Rp115,000  Rp115,000     17.0  17.0    mozzarella    mozzarella           new_york           new_york       XL       XL          no  False          yes   True
+100       E     E    Rp115,000  Rp115,000     17.0  17.0    mozzarella    mozzarella           new_york           new_york       XL       XL          no  False          yes   True
+101       E     E    Rp119,000  Rp119,000     17.0  17.0     mushrooms     mushrooms           new_york           new_york       XL       XL         yes   True           no  False
+102       E     E    Rp123,000  Rp123,000     12.0  12.0   smoked beef   smoked beef      double_decker      double_decker   medium   medium         yes   True          yes   True
+103       E     E    Rp126,500  Rp126,500     12.0  12.0   smoked beef   smoked beef      double_decker      double_decker   medium   medium         yes   True           no  False
+104       E     E     Rp23,500   Rp23,500      8.5   8.5    mozzarella    mozzarella            classic            classic    small    small         yes   True           no  False
+105       E     E     Rp31,000   Rp31,000      8.5   8.5     mushrooms     mushrooms            classic            classic    small    small         yes   True          yes   True
+106       E     E     Rp33,000   Rp33,000      8.5   8.5       chicken       chicken            classic            classic    small    small          no  False          yes   True
+107       E     E     Rp39,000   Rp39,000      8.5   8.5          tuna          tuna         spicy tuna         spicy tuna    small    small         yes   True          yes   True
+108       E     E     Rp44,000   Rp44,000      8.5   8.5          meat          meat    BBQ_meat_fiesta    BBQ_meat_fiesta    small    small         yes   True           no  False
+109       E     E     Rp46,000   Rp46,000     12.0  12.0       chicken       chicken            classic            classic   medium   medium         yes   True           no  False
+110       E     E     Rp46,000   Rp46,000     12.0  12.0    mozzarella    mozzarella            classic            classic   medium   medium         yes   True          yes   True
+111       E     E     Rp46,000   Rp46,000     12.0  12.0     mushrooms     mushrooms            classic            classic   medium   medium         yes   True          yes   True
+112       E     E     Rp49,000   Rp49,000     12.0  12.0    mozzarella    mozzarella            crunchy            crunchy   medium   medium          no  False           no  False
+113       E     E     Rp49,000   Rp49,000     12.0  12.0   smoked beef   smoked beef            crunchy            crunchy   medium   medium          no  False          yes   True
+114       E     E     Rp69,000   Rp69,000     12.0  12.0       chicken       chicken            classic            classic   medium   medium          no  False          yes   True
+115       E     E     Rp72,000   Rp72,000     12.0  12.0          tuna          tuna         spicy tuna         spicy tuna   medium   medium         yes   True          yes   True
+116       E     E     Rp72,000   Rp72,000     14.0  14.0       chicken       chicken            classic            classic    large    large         yes   True          yes   True
+117       E     E     Rp72,000   Rp72,000     14.0  14.0    mozzarella    mozzarella            classic            classic    large    large         yes   True          yes   True
+118       E     E     Rp72,000   Rp72,000     14.0  14.0   smoked beef   smoked beef            classic            classic    large    large         yes   True           no  False
+119       E     E     Rp75,000   Rp75,000      8.5   8.5   smoked beef   smoked beef            classic            classic    small    small         yes   True          yes   True
+120       E     E     Rp75,000   Rp75,000     12.0  12.0     mushrooms     mushrooms            crunchy            crunchy   medium   medium          no  False          yes   True
+121       E     E     Rp76,000   Rp76,000     12.0  12.0       chicken       chicken            crunchy            crunchy   medium   medium          no  False           no  False
+122       E     E     Rp78,000   Rp78,000     12.0  12.0          meat          meat    BBQ_meat_fiesta    BBQ_meat_fiesta   medium   medium          no  False           no  False
+123       E     E     Rp83,000   Rp83,000     17.0  17.0       chicken       chicken           new_york           new_york       XL       XL          no  False          yes   True
+124       E     E     Rp83,000   Rp83,000     17.0  17.0       chicken       chicken           new_york           new_york       XL       XL          no  False          yes   True
+125       E     E     Rp93,000   Rp93,000     14.0  14.0     mushrooms     mushrooms            classic            classic    large    large          no  False          yes   True
+126       E     E     Rp96,000   Rp96,000     12.0  12.0       chicken       chicken      double_decker      double_decker   medium   medium          no  False          yes   True
+127       E     E     Rp96,000   Rp96,000     12.0  12.0     mushrooms     mushrooms      double_decker      double_decker   medium   medium          no  False          yes   True
+128       E     E     Rp99,000   Rp99,000     14.0  14.0          tuna          tuna         spicy tuna         spicy tuna    large    large         yes   True          yes   True
+remarks: PASSED
