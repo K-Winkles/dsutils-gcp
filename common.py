@@ -1,15 +1,29 @@
+import pathlib
+
 from google.cloud import bigquery
 import pandas as pd
 import datetime
 import json
+import logging
+
 current_time = datetime.datetime.now()
+current_date = current_time.strftime("%m-%d-%Y")
+print(current_date)
+pathlib.Path(f'logs/{current_date}').mkdir(parents=True, exist_ok=True)
+logging.basicConfig(filename=f'logs/{current_date}/{current_time.strftime("%H.%M.%S")}.log',
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
+logger = logging.getLogger(__name__)
+
 bqclient = bigquery.Client()
+
 
 def get_table_data(bq_table_spec):
     table = bigquery.TableReference.from_string(bq_table_spec)
     rows = bqclient.list_rows(table)
     data = rows.to_dataframe()
     return data
+
 
 def get_bucket_data(gsutil_uri):
     if '.csv' in gsutil_uri:
@@ -20,24 +34,27 @@ def get_bucket_data(gsutil_uri):
         return 'filetype invalid'
     return data
 
+
 def parse_data(source_data, target_data, report, mode):
     bool_compare_row_count = compare_row_count(source_data, target_data, report)
-    bool_compare_schema = compare_schema(source_data, target_data,  report, mode)
+    bool_compare_schema = compare_schema(source_data, target_data, report, mode)
     bool_check_duplicates_source = check_duplicates(source_data, report, mode='source')
     bool_check_duplicates_target = check_duplicates(target_data, report, mode='target')
     bool_compare_diff = compare_diff(source_data, target_data, report)
-    if (bool_compare_row_count and 
-        bool_compare_schema and 
-        bool_check_duplicates_source and
-        bool_check_duplicates_target and
-        bool_compare_diff):
+    if (bool_compare_row_count and
+            bool_compare_schema and
+            bool_check_duplicates_source and
+            bool_check_duplicates_target and
+            bool_compare_diff):
         print('all matched')
-        return True 
-    else: 
+        return True
+    else:
         return False
 
+
 def compare_row_count(source_data, target_data, report):
-    string_to_write = '---ROW CHECK---\nsource data rows: {}\ntarget data rows:{}\n'.format(len(source_data), len(target_data))
+    string_to_write = '---ROW CHECK---\nsource data rows: {}\ntarget data rows:{}\n'.format(len(source_data),
+                                                                                            len(target_data))
     if len(source_data) == len(target_data):
         string_to_write = string_to_write + 'remarks: PASSED\n'
         report.write(string_to_write)
@@ -46,6 +63,7 @@ def compare_row_count(source_data, target_data, report):
         string_to_write = string_to_write + 'remarks: FAILED\n'
         report.write(string_to_write)
         return False
+
 
 def compare_schema(source_data, target_data, report, mode):
     string_to_write = '---SCHEMA CHECK---\nmode: {}\n'.format(mode)
@@ -58,9 +76,10 @@ def compare_schema(source_data, target_data, report, mode):
     for i in range(len(target_data.columns)):
         target_schema[target_data.columns.tolist()[i]] = str(target_data.dtypes[i])
 
-    string_to_write = string_to_write + 'source schema: {}\ntarget schema: {}\n'.format(json.dumps(source_schema), json.dumps(target_schema))
+    string_to_write = string_to_write + 'source schema: {}\ntarget schema: {}\n'.format(json.dumps(source_schema),
+                                                                                        json.dumps(target_schema))
 
-    if mode =='strict' and source_schema == target_schema:
+    if mode == 'strict' and source_schema == target_schema:
         string_to_write = string_to_write + 'remarks: PASSED\n'
         report.write(string_to_write)
         return True
@@ -68,7 +87,7 @@ def compare_schema(source_data, target_data, report, mode):
         string_to_write = string_to_write + 'remarks: PASSED\n'
         report.write(string_to_write)
         return True
-    else: 
+    else:
         string_to_write = string_to_write + 'remarks: FAILED\n'
         report.write(string_to_write)
         return False
@@ -81,7 +100,7 @@ def compare_diff(source_data, target_data, report):
     sorted_target_data = target_data.sort_values(by=target_data_columns, ignore_index=True)
     comparison_df = sorted_source_data.compare(sorted_target_data, keep_shape=True, keep_equal=True)
     string_to_write = '---DIFF CHECK---\n{}\n'.format(comparison_df.to_string())
-    
+
     if comparison_df.isnull().values.any():
         string_to_write = string_to_write + 'remarks: FAILED\n'
         report.write(string_to_write)
@@ -90,6 +109,7 @@ def compare_diff(source_data, target_data, report):
         string_to_write = string_to_write + 'remarks: PASSED'
         report.write(string_to_write)
         return True
+
 
 def check_duplicates(data, report, mode):
     duplicate_check_df = data.duplicated()
@@ -105,6 +125,7 @@ def check_duplicates(data, report, mode):
         string_to_write = string_to_write + 'remarks:PASSED\n'
         report.write(string_to_write)
         return True
+
 
 def get_sample_values(data):
     return data.head(10)
