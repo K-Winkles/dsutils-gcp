@@ -4,9 +4,10 @@ from common import get_bucket_data
 from common import get_table_data
 from common import parse_data
 
-current_time = datetime.datetime.now().strftime('%m-%d-%Y_%H.%M.%S')
-report = open('anomaly_report_{}.txt'.format(current_time), 'x')
-
+datetime_now = datetime.datetime.now()
+current_time = datetime_now.strftime('%m-%d-%Y_%H.%M.%S')
+current_folder_name = f'{datetime_now.strftime("%m-%d-%Y")}/{datetime_now.strftime("%H.%M.%S")}'
+report = open(f'logs/{current_folder_name}/anomaly_report_{current_time}.txt', 'x')
 
 if __name__ in '__main__':
     cli_arguments = sys.argv

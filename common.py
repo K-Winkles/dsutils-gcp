@@ -8,11 +8,11 @@ import json
 import logging
 
 current_time = datetime.datetime.now()
-current_date = current_time.strftime("%m-%d-%Y")
+current_folder_name = f'{current_time.strftime("%m-%d-%Y")}/{current_time.strftime("%H.%M.%S")}'
 
-pathlib.Path(f'logs/{current_date}').mkdir(parents=True, exist_ok=True)
+pathlib.Path(f'logs/{current_folder_name}').mkdir(parents=True, exist_ok=True)
 
-error_log_filename = f'logs/{current_date}/{current_time.strftime("%H.%M.%S")}.log'
+error_log_filename = f'logs/{current_folder_name}/error.log'
 logging.basicConfig(filename=error_log_filename,
                     level=logging.ERROR,
                     format='{%(pathname)s:%(lineno)d} %(levelname)s %(funcName)s %(asctime)s %(name)s %(message)s', )
