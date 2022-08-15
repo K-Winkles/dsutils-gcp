@@ -1,0 +1,37 @@
+job_configs:
+  - job_parameters: 
+    - name: gcs_to_gcs
+    - sources:
+        - gs://staging-bucket-secret-sauce/pizza_v1.csv
+        - gs://staging-bucket-secret-sauce/pizza_v2.csv
+        - gs://staging-bucket-secret-sauce/student_data.csv
+    - targets:
+        - gs://staging-bucket-secret-sauce/pizza_v1.csv
+        - gs://staging-bucket-secret-sauce/pizza_v2.csv
+        - gs://staging-bucket-secret-sauce/student_data.csv
+    - mode: default
+  - job_parameters:
+    - name: gcs_to_bq
+    - sources:
+        - gs://staging-bucket-secret-sauce/pizza_v1.csv
+        - gs://staging-bucket-secret-sauce/pizza_v2.csv
+        - gs://staging-bucket-secret-sauce/student_data.csv
+    - targets:
+        - agile-splicer-356706.dummy_data.pizza_v1
+        - agile-splicer-356706.dummy_data.pizza_v2
+        - agile-splicer-356706.dummy_data.student_data
+    - mode: default
+  - job_parameters:
+    - name: bq_to_bq
+    - sources:
+        - agile-splicer-356706.dummy_data.pizza_v1
+        - agile-splicer-356706.dummy_data.pizza_v2
+        - agile-splicer-356706.dummy_data.student_data
+    - targets:
+        - agile-splicer-356706.dummy_data.pizza_v1
+        - agile-splicer-356706.dummy_data.pizza_v2
+        - agile-splicer-356706.dummy_data.student_data
+    - mode: default
+
+
+

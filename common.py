@@ -2,8 +2,14 @@ from google.cloud import bigquery
 import pandas as pd
 import datetime
 import json
+import yaml
 current_time = datetime.datetime.now()
 bqclient = bigquery.Client()
+
+def get_config(filepath):
+    config = open(filepath, 'r')
+    content = yaml.safe_load(config)
+    return content
 
 def get_table_data(bq_table_spec):
     table = bigquery.TableReference.from_string(bq_table_spec)
@@ -23,8 +29,8 @@ def get_bucket_data(gsutil_uri):
 def parse_data(source_data, target_data, report, mode):
     bool_compare_row_count = compare_row_count(source_data, target_data, report)
     bool_compare_schema = compare_schema(source_data, target_data,  report, mode)
-    bool_check_duplicates_source = check_duplicates(source_data, report, mode='source')
-    bool_check_duplicates_target = check_duplicates(target_data, report, mode='target')
+    bool_check_duplicates_source = check_duplicates(source_data, report)
+    bool_check_duplicates_target = check_duplicates(target_data, report)
     bool_compare_diff = compare_diff(source_data, target_data, report)
     if (bool_compare_row_count and 
         bool_compare_schema and 
@@ -34,6 +40,7 @@ def parse_data(source_data, target_data, report, mode):
         print('all matched')
         return True 
     else: 
+        print('anomalies found')
         return False
 
 def compare_row_count(source_data, target_data, report):
@@ -87,15 +94,15 @@ def compare_diff(source_data, target_data, report):
         report.write(string_to_write)
         return False
     else:
-        string_to_write = string_to_write + 'remarks: PASSED'
+        string_to_write = string_to_write + 'remarks: PASSED\n'
         report.write(string_to_write)
         return True
 
-def check_duplicates(data, report, mode):
+def check_duplicates(data, report):
     duplicate_check_df = data.duplicated()
     number_of_duplicates = duplicate_check_df.sum()
     duplicate_rows = data.loc[data.duplicated(), :]
-    string_to_write = '---DUPLICATE CHECK---\nmode: {}\n'.format(mode)
+    string_to_write = '---DUPLICATE CHECK---\n'
 
     if number_of_duplicates > 0:
         string_to_write = string_to_write + duplicate_rows.to_string() + '\nremarks: FAILED\n'
