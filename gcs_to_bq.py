@@ -2,6 +2,7 @@ from common import get_bucket_data
 from common import get_table_data
 from common import parse_data
 
+
 def gcs_to_bq(sources, targets, mode, report):
     report.write('module: gcs_to_bq\n')
 
