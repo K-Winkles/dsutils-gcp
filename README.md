@@ -21,7 +21,7 @@ Currently, there are three modules:
 3. bq_to_bq - comparies a source table on bq with a target table on BQ
 
 To run a module, the command pattern is as follows:
-`python [module_name] [path to config file]`
+`python main.py [path to config file]`
 
 ### Config
 The config file is a YAML file stored locally. It contains the list of jobs to be run. Each job should contain three parameters:
