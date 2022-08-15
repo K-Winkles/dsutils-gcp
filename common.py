@@ -6,6 +6,7 @@ import pandas as pd
 import datetime
 import json
 import logging
+import yaml
 
 current_time = datetime.datetime.now()
 current_folder_name = f'{current_time.strftime("%m-%d-%Y")}/{current_time.strftime("%H.%M.%S")}'
@@ -18,9 +19,11 @@ logging.basicConfig(filename=error_log_filename,
                     format='{%(pathname)s:%(lineno)d} %(levelname)s %(funcName)s %(asctime)s %(name)s %(message)s', )
 
 logger = logging.getLogger(__name__)
-
 bqclient = bigquery.Client()
-
+def get_config(filepath):
+    config = open(filepath, 'r')
+    content = yaml.safe_load(config)
+    return content
 
 def get_table_data(bq_table_spec):
     try:
@@ -129,10 +132,9 @@ def compare_diff(source_data, target_data, report):
         report.write(string_to_write)
         return False
     else:
-        string_to_write = string_to_write + 'remarks: PASSED'
+        string_to_write = string_to_write + 'remarks: PASSED\n'
         report.write(string_to_write)
         return True
-
 
 def check_duplicates(data, report, mode):
     try:
