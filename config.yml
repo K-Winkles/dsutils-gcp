@@ -13,7 +13,7 @@ job_configs:
   - job_parameters:
     - name: gcs_to_bq
     - sources:
-        - gs://staging-bucket-secret-sauce/pizza_v1.csv
+        - gs://staging-bucket-secret-sauce/pizza_v2.csv   #OJ: modified just so to check compare_schema_diff
         - gs://staging-bucket-secret-sauce/pizza_v2.csv
         - gs://staging-bucket-secret-sauce/student_data.csv
     - targets:
