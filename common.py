@@ -90,8 +90,8 @@ def compare_row_count(source_data, target_data, report):
 def compare_schema(source_data, target_data, report, mode):
     try:
         string_to_write = '---SCHEMA CHECK---\nmode: {}\n'.format(mode)
+        
         source_schema = {}
-
         for i in range(len(source_data.columns)):
             source_schema[source_data.columns.tolist()[i]] = str(source_data.dtypes[i])
 
@@ -118,6 +118,24 @@ def compare_schema(source_data, target_data, report, mode):
         logger.error(e)
         return False
 
+def compare_schema(source_schema, target_schema):
+    """
+      Compares the difference of the source and target schema
+
+      Args:
+          source_schema (dict)
+          target_schema (dict)
+
+      Returns:
+          Schema differences (dict)
+    """
+    if len(source_schema) > len(target_schema):
+        new_schema = { k : source_schema[k] for k in set(source_schema) - set(target_schema) }
+        schema_failed = f'{new_schema} column was added to source data'
+    elif len(source_schema) < len(target_schema):
+        new_schema = { k : target_schema[k] for k in set(target_schema) - set(source_schema) }
+        schema_failed = f'{new_schema} column is not present in target data'
+    return schema_failed
 
 def compare_diff(source_data, target_data, report):
     source_data_columns = source_data.columns.tolist()
