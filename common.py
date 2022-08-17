@@ -111,30 +111,31 @@ def compare_schema(source_data, target_data, report, mode):
             report.write(string_to_write)
             return True
         else:
-            string_to_write = string_to_write + 'remarks: FAILED\n'
+            string_to_write = string_to_write + compare_schema_diff(source_schema, target_schema) + '\nremarks: FAILED\n'
             report.write(string_to_write)
             return False
     except Exception as e:
         logger.error(e)
         return False
 
-def compare_schema(source_schema, target_schema):
+def compare_schema_diff(source_schema, target_schema):
     """
       Compares the difference of the source and target schema
-
       Args:
           source_schema (dict)
           target_schema (dict)
-
       Returns:
           Schema differences (dict)
     """
-    if len(source_schema) > len(target_schema):
-        new_schema = { k : source_schema[k] for k in set(source_schema) - set(target_schema) }
-        schema_failed = f'{new_schema} column was added to source data'
-    elif len(source_schema) < len(target_schema):
-        new_schema = { k : target_schema[k] for k in set(target_schema) - set(source_schema) }
-        schema_failed = f'{new_schema} column is not present in target data'
+    merged_schema = source_schema | target_schema
+    src_schema_diff, trg_schema_diff = {}, {}
+    if merged_schema != source_schema:
+        src_schema_diff = { k : merged_schema[k] for k in set(merged_schema) - set(target_schema) }
+
+    if merged_schema != target_schema:
+        trg_schema_diff = { k : merged_schema[k] for k in set(merged_schema) - set(source_schema) }
+    
+    schema_failed = f'source schema [new]: {src_schema_diff}\ntarget schema [new]: {trg_schema_diff}'
     return schema_failed
 
 def compare_diff(source_data, target_data, report):
