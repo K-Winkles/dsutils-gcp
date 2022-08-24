@@ -1,3 +1,10 @@
+global_variables:
+- current_time: 00.51.58
+- current_date: 08-25-2022
+- anomaly_report_filename: anomaly_report_08-25-2022_00.51.58.txt
+- error_filename: error.log
+- current_folder: C:\Users\ojelle.rogero\Desktop\Ojelle\gcp_validator\secret-sauce\logs\08-25-2022\00.51.58
+job_configs:
 job_configs:
   - job_parameters: 
     - name: gcs_to_gcs
@@ -13,7 +20,7 @@ job_configs:
   - job_parameters:
     - name: gcs_to_bq
     - sources:
-        - gs://staging-bucket-secret-sauce/pizza_v2.csv   #OJ: modified just so to check compare_schema_diff
+        - gs://staging-bucket-secret-sauce/pizza_v1.csv
         - gs://staging-bucket-secret-sauce/pizza_v2.csv
         - gs://staging-bucket-secret-sauce/student_data.csv
     - targets:
@@ -32,6 +39,3 @@ job_configs:
         - agile-splicer-356706.dummy_data.pizza_v2
         - agile-splicer-356706.dummy_data.student_data
     - mode: default
-
-
-

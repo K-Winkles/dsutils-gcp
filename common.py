@@ -2,12 +2,14 @@ import os
 import pathlib
 
 from google.cloud import bigquery
+from logger import *
 import pandas as pd
 import datetime
 import json
 import logging
 import yaml
 
+# Oj Comments: Will have to create a separate function for logging
 current_time = datetime.datetime.now()
 current_folder_name = f'{current_time.strftime("%m-%d-%Y")}/{current_time.strftime("%H.%M.%S")}'
 
@@ -19,13 +21,18 @@ logging.basicConfig(filename=error_log_filename,
                     format='{%(pathname)s:%(lineno)d} %(levelname)s %(funcName)s %(asctime)s %(name)s %(message)s', )
 
 logger = logging.getLogger(__name__)
+
 bqclient = bigquery.Client()
+
+
 def get_config(filepath):
+    """Read and opens the job config yaml"""
     config = open(filepath, 'r')
     content = yaml.safe_load(config)
     return content
 
 def get_table_data(bq_table_spec):
+    """Gets table from """
     try:
         table = bigquery.TableReference.from_string(bq_table_spec)
         rows = bqclient.list_rows(table)
@@ -36,6 +43,7 @@ def get_table_data(bq_table_spec):
 
 
 def get_bucket_data(gsutil_uri):
+    """Get and read data from your GCS bucket"""
     try:
         if '.csv' in gsutil_uri:
             data = pd.read_csv(gsutil_uri)
@@ -49,13 +57,14 @@ def get_bucket_data(gsutil_uri):
         return False
 
 
-def parse_data(source_data, target_data, report, mode):
+def parse_data(source_data, target_data, mode):
+    """Multiple data checking"""
     try:
-        bool_compare_row_count = compare_row_count(source_data, target_data, report)
-        bool_compare_schema = compare_schema(source_data, target_data, report, mode)
-        bool_check_duplicates_source = check_duplicates(source_data, report, mode='source')
-        bool_check_duplicates_target = check_duplicates(target_data, report, mode='target')
-        bool_compare_diff = compare_diff(source_data, target_data, report)
+        bool_compare_row_count = compare_row_count(source_data, target_data)
+        bool_compare_schema = compare_schema(source_data, target_data, mode)
+        bool_check_duplicates_source = check_duplicates(source_data, mode='source')
+        bool_check_duplicates_target = check_duplicates(target_data, mode='target')
+        bool_compare_diff = compare_diff(source_data, target_data)
         if (bool_compare_row_count and
                 bool_compare_schema and
                 bool_check_duplicates_source and
@@ -70,24 +79,26 @@ def parse_data(source_data, target_data, report, mode):
         return False
 
 
-def compare_row_count(source_data, target_data, report):
+def compare_row_count(source_data, target_data):
+    """Compares the data row count of source vs target data"""
     try:
-        string_to_write = '---ROW CHECK---\nsource data rows: {}\ntarget data rows:{}\n'.format(len(source_data),
+        string_to_write = '---ROW CHECK---\nsource data rows: {}\ntarget data rows: {}\n'.format(len(source_data),
                                                                                                 len(target_data))
         if len(source_data) == len(target_data):
             string_to_write = string_to_write + 'remarks: PASSED\n'
-            report.write(string_to_write)
+            anomaly_report(string_to_write)
             return True
         else:
             string_to_write = string_to_write + 'remarks: FAILED\n'
-            report.write(string_to_write)
+            anomaly_report(string_to_write)
             return False
     except Exception as te:
         logger.error(te)
         return False
 
 
-def compare_schema(source_data, target_data, report, mode):
+def compare_schema(source_data, target_data, mode):
+    """Compares the schema of source vs target data"""
     try:
         string_to_write = '---SCHEMA CHECK---\nmode: {}\n'.format(mode)
         
@@ -104,41 +115,35 @@ def compare_schema(source_data, target_data, report, mode):
 
         if mode == 'strict' and source_schema == target_schema:
             string_to_write = string_to_write + 'remarks: PASSED\n'
-            report.write(string_to_write)
+            anomaly_report(string_to_write)
             return True
         elif mode == 'default' and source_schema.keys() == target_schema.keys():
             string_to_write = string_to_write + 'remarks: PASSED\n'
-            report.write(string_to_write)
+            anomaly_report(string_to_write)
             return True
         else:
             string_to_write = string_to_write + compare_schema_diff(source_schema, target_schema) + '\nremarks: FAILED\n'
-            report.write(string_to_write)
+            anomaly_report(string_to_write)
             return False
     except Exception as e:
         logger.error(e)
         return False
 
+
 def compare_schema_diff(source_schema, target_schema):
-    """
-      Compares the difference of the source and target schema
-      Args:
-          source_schema (dict)
-          target_schema (dict)
-      Returns:
-          Schema differences (dict)
-    """
+    """Compares the difference of source vs target schema and outputs the schema differences"""
     merged_schema = source_schema | target_schema
     src_schema_diff, trg_schema_diff = {}, {}
-    if merged_schema != source_schema:
-        src_schema_diff = { k : merged_schema[k] for k in set(merged_schema) - set(target_schema) }
-
-    if merged_schema != target_schema:
-        trg_schema_diff = { k : merged_schema[k] for k in set(merged_schema) - set(source_schema) }
+    diff = ( set(merged_schema) - set(source_schema) ) | ( set(merged_schema) - set(target_schema) )
     
+    src_schema_diff = { k : merged_schema[k] for k in diff if k in source_schema }
+    trg_schema_diff = { k : merged_schema[k] for k in diff if k in target_schema }
     schema_failed = f'source schema [new]: {src_schema_diff}\ntarget schema [new]: {trg_schema_diff}'
     return schema_failed
 
-def compare_diff(source_data, target_data, report):
+
+def compare_diff(source_data, target_data):
+    """Compares the differences of the source and target columns"""
     source_data_columns = source_data.columns.tolist()
     target_data_columns = target_data.columns.tolist()
     sorted_source_data = source_data.sort_values(by=source_data_columns, ignore_index=True)
@@ -148,14 +153,16 @@ def compare_diff(source_data, target_data, report):
 
     if comparison_df.isnull().values.any():
         string_to_write = string_to_write + 'remarks: FAILED\n'
-        report.write(string_to_write)
+        anomaly_report(string_to_write)
         return False
     else:
         string_to_write = string_to_write + 'remarks: PASSED\n'
-        report.write(string_to_write)
+        anomaly_report(string_to_write)
         return True
 
-def check_duplicates(data, report, mode):
+
+def check_duplicates(data, mode):
+    """Checks for any duplicates"""
     try:
         duplicate_check_df = data.duplicated()
         number_of_duplicates = duplicate_check_df.sum()
@@ -164,11 +171,11 @@ def check_duplicates(data, report, mode):
 
         if number_of_duplicates > 0:
             string_to_write = string_to_write + duplicate_rows.to_string() + '\nremarks: FAILED\n'
-            report.write(string_to_write)
+            anomaly_report(string_to_write)
             return False
         else:
             string_to_write = string_to_write + 'remarks:PASSED\n'
-            report.write(string_to_write)
+            anomaly_report(string_to_write)
             return True
     except Exception as e:
         logger.error(e)
