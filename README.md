@@ -10,9 +10,15 @@ The following parameters will be tested:
 4. Diff - entry by entry comparison between two tables
 
 ## Pre-requisites
-If you are running the modules locally, please follow the appropriate authorization steps. For Google Cloud, the steps can be found here: https://cloud.google.com/docs/authentication/getting-started.
+There are 2 ways to run the modules: (1) Locally and (2) within a cloud environment
+1. Running the modules locally
+   a. Please follow the appropriate authorization steps. For Google Cloud, the steps can be found here: https://cloud.google.com/docs/authentication/getting-started.
+   b. Make sure to save the authenticator json key on the same folder as your project.
+   c. Run this command on terminal: $env:GOOGLE_APPLICATION_CREDENTIALS="<filename_of_authenticator_key>.json"
 
-Otherwise, if you are running the modules within a cloud environment, ensure that you have IAM permissions to run Python scripts via Cloud Shell. Note that these modules can also be run within Cloud Functions in the event that testing needs to be automated and scalable.
+2. Running the modules within a cloud environment
+   a. Ensure that you have IAM permissions to run Python scripts via Cloud Shell. 
+      Note that these modules can also be run within Cloud Functions in the event that testing needs to be automated and scalable.
 
 ## Running the modules
 Currently, there are three modules:
