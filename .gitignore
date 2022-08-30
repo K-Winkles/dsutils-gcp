@@ -1,4 +1,4 @@
-agile-splicer-*.json
+*.json
 *.pyc
 venv
 \logs
